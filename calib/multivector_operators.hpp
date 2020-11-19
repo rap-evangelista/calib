@@ -132,7 +132,7 @@ namespace calib
 
         // # outer product.
 
-        multivector& operator^ (multivector& v1, multivector& v2)
+        const multivector& operator^ (multivector& v1, multivector& v2)
         {
             multivector v3 = multivector ();
 

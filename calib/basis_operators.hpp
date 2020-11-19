@@ -55,13 +55,6 @@ namespace calib
 
             while (!sorted)
             {
-
-                for (int i = 0; i < base. base_index. size (); i++)
-                {
-                    std::cout << base. base_index [i] << ", ";
-                }
-                std::cout << std::endl;
-
                 sorted = true;
                 for (int i = 0; i < base. base_index. size () - 1; i++)
                 {
@@ -70,7 +63,6 @@ namespace calib
                     {
                         base. base_index. erase (base. base_index. begin () + i + 1);
                         base. base_index. erase (base. base_index. begin () + i --);
-                        std::cout << "eliminando bases iguais." << std::endl;
                         if (i < 0) break;
                         continue;
                     }
@@ -78,7 +70,6 @@ namespace calib
                     // # se base maior, troca as bases e inverte a orientação.
                     if (base. base_index [i] > base. base_index [i+1])
                     {
-                        std::cout << "trocando bases." << base. base_index [i] << " por " << base. base_index [i+1] << std::endl;
                         sorted = false;
                         int aux = base. base_index [i];
                         base. base_index [i] = base. base_index [i+1];
@@ -87,8 +78,6 @@ namespace calib
                     }
                 }
             }
-
-            std::cout << "mas eu fechei... o.O" << std::endl;
         }
 
     #endif
