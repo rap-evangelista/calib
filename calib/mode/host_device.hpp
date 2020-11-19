@@ -1,0 +1,3 @@
+#ifndef CALIB_MODE_HOST_DEVICE
+    #define CALIB_MODE_HOST_DEVICE
+#endif
