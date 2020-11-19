@@ -100,7 +100,7 @@ namespace calib
         {
             // # verify if the size justify calling GPU or not.
 
-            //bridge_cannonical_reordering (base);
+            bridge_cannonical_reordering (base);
         }
     #endif
 

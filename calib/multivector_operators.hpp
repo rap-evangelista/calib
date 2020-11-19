@@ -17,7 +17,7 @@ namespace calib
 
     // # summation possibilities between multivectors and basis.
 
-    const basis operator+ (basis& base1, basis& base2);
+    const multivector operator+ (basis& base1, basis& base2);
 
     const multivector operator+ (multivector& mv, basis& base);
 
@@ -174,18 +174,23 @@ namespace calib
 
     #ifdef CALIB_MODE_HOST_DEVICE
 
+        const multivector operator+ (basis& base1, basis& base2)
+        {
+            return multivector ();
+        }
+
         const multivector operator+ (multivector& mv1, multivector& mv2)
         {
-            //return bridge_sum_multivectors (mv1, mv2);
-            return multivector ();
+            return bridge_sum_multivectors (mv1, mv2);
+            //return multivector ();
         }
 
         // # external product.
 
         const multivector& operator^ (multivector& mv1, multivector& mv2)
         {
-            //return bridge_outer_prd_multivectors (mv1, mv2);
-            return multivector ();
+            return bridge_outer_prd_multivectors (mv1, mv2);
+            //return multivector ();
         }
 
         // # inner product.
