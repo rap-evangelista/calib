@@ -1,3 +1,5 @@
+#include "metric.hpp"
+
 #include "basis.hpp"
 #include "multivector.hpp"
 

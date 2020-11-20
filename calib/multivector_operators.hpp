@@ -132,36 +132,45 @@ namespace calib
 
         // # outer product.
 
-        const multivector& operator^ (multivector& v1, multivector& v2)
+        const multivector _outer_prd_ (multivector& v1, multivector& v2)
         {
             multivector v3 = multivector ();
 
-            for (int i = 0; i < v1. elems. size (); i++)
+            for (auto base1 : v1. elems)
             {
-                for (int j = 0; j < v2. elems. size (); j++)
+                for (auto base2 : v2. elems)
                 {
-                    double magnitude = v1. elems [i]. magnitude * v2. elems [j]. magnitude;
-                    int orientation = v1. elems [i]. orientation * v2. elems [j]. orientation;
-
-                    // # shallow copy.
-
-                    std::vector <int> base_index;
-                    base_index =  v1. elems [i]. base_index;
-
-                    for (int k = 0; k < v2. elems [j]. base_index. size (); k++)
-                    {
-                        base_index. emplace_back (v2. elems [j]. base_index [k]);
-                    }
-
-                    basis base = basis (base_index);
-                    base. magnitude = magnitude;
-                    base. orientation = orientation;
-                    
-                    std::cout << "> resulted in (co) " << base << std::endl;
-                    
-                    v3. add_elem (base);
+                    basis base_ = base1 ^ base2;
+                    v3. add_elem (base_);
                 }
             }
+
+            // # reduct.
+
+            return v3;
+        }
+
+        const multivector& operator^ (multivector& v1, multivector& v2)
+        {
+            return _outer_prd_ (v1, v2);
+        }
+
+        // # regressive product.
+
+        const multivector _regr_prd_ (multivector& v1, multivector& v2)
+        {
+            multivector v3 = multivector ();
+
+            for (auto base1 : v1. elems)
+            {
+                for (auto base2 : v2. elems)
+                {
+                    basis base_ = _regr_prd_ (base1, base2);
+                    v3. add_elem (base_);
+                }
+            }
+
+            // # reduct.
 
             return v3;
         }

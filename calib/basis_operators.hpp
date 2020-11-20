@@ -9,11 +9,11 @@ namespace calib
 {
     // # outer product possibilities for basis.
 
-    const basis _outer_prd_ (basis& base1, basis& base2);
+    const basis _outer_prd_ (basis& base1, basis& base2);   // # done.
 
     // # regressive product possibilities for basis.
 
-    const basis _regr_prd_ (basis& base1, basis& base2);
+    const basis _regr_prd_ (basis& base1, basis& base2);   // # done.
 
     // # inner product possibilities for basis.
 
@@ -133,6 +133,34 @@ namespace calib
     const basis operator^ (basis& base1, basis& base2)
     {
         return _outer_prd_ (base1, base2);
+    }
+
+    const basis _regr_prd_ (basis& base1, basis& base2)
+    {
+        std::vector <int> base_index;
+
+        int i = 0, j = 0;
+        while (i < base1. base_index. size () && j < base2. base_index. size ())
+        {
+            if (base1. base_index [i] == base2. base_index [j])
+            {
+                base_index. push_back (base1. base_index [i]);
+                i++; j++;
+            } else {
+                if (base1. base_index [i] < base2. base_index [j])
+                {
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+        }
+
+        basis base3 = basis (base_index);
+        base3. magnitude = base1. magnitude * base2. magnitude;
+        base3. orientation = base1. orientation * base2. orientation;
+
+        return base3;
     }
 
     bool operator== (basis& base1, basis& base2)
