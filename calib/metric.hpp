@@ -2,18 +2,12 @@
 
 namespace calib
 {
-    void metric_init (double * metric_matrix);
-
-    struct metric
+    struct base_metric
     {
         public:
-            //static bool initialized;
-            //static double metric_matrix [];
+            virtual void init () = 0;
+            virtual std::vector <double> matrix () = 0;
 
-            metric ()
-            {
-                //if (!initialized) metric_init (metric_matrix);
-                //initialized = true;
-            }
+            base_metric () {}
     };
 }

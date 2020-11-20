@@ -61,27 +61,29 @@ namespace calib
 
     // # inner product possibilities between multivectors and basis.
 
-    const multivector _inner_prd_ (basis& base, multivector& mv);
+    const multivector _inner_prd_ (basis& base, multivector& mv, base_metric& metric);
 
-    const multivector _inner_prd_ (multivector& mv, basis& base);
+    const multivector _inner_prd_ (multivector& mv, basis& base, base_metric& metric);
 
-    const multivector _inner_prd_ (multivector& v1, multivector& v2);
+    const multivector _inner_prd_ (multivector& v1, multivector& v2, base_metric& metric);
 
     // # left contraction possibilities between multivectors and basis.
 
-    const multivector _left_contr_ (basis& base, multivector& mv);
+    const multivector _left_contr_ (basis& base, multivector& mv, base_metric& metric);
 
-    const multivector _left_contr_ (multivector& mv, basis& base);
+    const multivector _left_contr_ (multivector& mv, basis& base, base_metric& metric);
 
-    const multivector _left_contr_ (multivector& v1, multivector& v2);
+    const multivector _left_contr_ (multivector& v1, multivector& v2, base_metric& metric);
 
     // # geometric product possibilities between multivectors and basis.
 
-    const multivector _geom_prd_ (basis& base, multivector& mv);
+    const multivector _geom_prd_ (basis& base1, basis& base2, base_metric& metric);
 
-    const multivector _geom_prd_ (multivector& mv, basis& base);
+    const multivector _geom_prd_ (basis& base, multivector& mv, base_metric& metric);
 
-    const multivector _geom_prd_ (multivector& v1, multivector& v2);
+    const multivector _geom_prd_ (multivector& mv, basis& base, base_metric& metric);
+
+    const multivector _geom_prd_ (multivector& v1, multivector& v2, base_metric& metric);
 
     // # individual operations possibilities for multivectors.
 
@@ -176,6 +178,13 @@ namespace calib
         }
 
         // # inner product.
+
+        // # geometric product.
+
+        //const multivector _geom_prd_ (basis& base1, basis& base2, base_metric& metric)
+        //{
+        //    return _inner_prd_ (base1, base2, metric) + _outer_prd_ (base1, base2);
+        //}
 
     #endif
 

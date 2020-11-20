@@ -30,7 +30,9 @@ int main (int argv, char * argc)
 
     auto m1 = e1 + e3;
 
-    //auto mx = metric ();
+    auto mx = euclidian_metric ();
+
+    auto m2 = _inner_prd_ (e1, e2, mx);
 
     std::cout << m1 << std::endl;
 }

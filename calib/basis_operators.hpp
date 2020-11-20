@@ -17,15 +17,11 @@ namespace calib
 
     // # inner product possibilities for basis.
 
-    const basis _inner_prd_ (basis& base1, basis& base2);
+    const basis _inner_prd_ (basis& base1, basis& base2, base_metric& metric);
 
     // # left contraction possibilities for basis.
 
     const basis _left_contr_ (basis& base1, basis& base2);
-
-    // # geometric product possibilities for basis.
-
-    const basis _geom_prd_ (basis& base1, basis& base2);
 
     // # individual operations possibilities for multivectors.
 
@@ -163,9 +159,15 @@ namespace calib
         return base3;
     }
 
+    const basis _inner_prd_ (basis& base1, basis& base2, base_metric& metric)
+    {
+        std::cout << "size of metric matrix: " << metric. matrix (). size () << std::endl;
+        return basis ();
+    }
+
     bool operator== (basis& base1, basis& base2)
     {
-        return (base1. unique_index () == base2. unique_index ());
+        return (base1. degree () == base2. degree ()) && (base1. unique_index () == base2. unique_index ());
     }
 }
 

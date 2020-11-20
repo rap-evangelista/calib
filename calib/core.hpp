@@ -1,7 +1,3 @@
-#ifndef CALIB_DEFAULT_METRIC_SPACE
-    #define CALIB_DEFAULT_METRIC_SPACE "euclidian"
-#endif
-
 #ifndef DEFAULT_SPACE_DIM
     #define DEFAULT_SPACE_DIM 2
 #endif
@@ -11,3 +7,8 @@
 #endif
 
 #include "datastructure.hpp"
+
+#ifndef CALIB_METRIC_SPACE
+    #define CALIB_METRIC_SPACE
+    #include "geometries\euclidian.hpp"
+#endif
