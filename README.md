@@ -9,7 +9,7 @@ This library is still under construction and will be presented as a final projec
  - Automatic **cannonical reordering** * to mantain an organized basis.
  - **Outer product** *.
  - **Regressive product** *.
- - **Inner product** * with a customizable metric matrix (Euclidian by default).
+ - **Inner product** * with a customizable metric matrix.
  - **Left contraction** * operator.
  - **Geometric Product** *.
  - **Reverse norm** operator.
