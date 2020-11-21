@@ -17,7 +17,7 @@ namespace calib
 
     // # summation possibilities between multivectors and basis.
 
-    const multivector operator+ (basis& base1, basis& base2);
+    const multivector operator+ (basis& base1, basis& base2);   // # done
 
     const multivector operator+ (multivector& mv, basis& base);
 
@@ -136,6 +136,19 @@ namespace calib
             return mv;
         }
 
+        template<typename T>
+        const basis operator+ (T scalar, basis& base)
+        {
+
+            return basis ();
+        }
+
+        template<typename T>
+        const basis operator+ (basis& base, T scalar)
+        {
+            return (scalar + base);
+        }
+
         // # outer product.
 
         const multivector _outer_prd_ (multivector& v1, multivector& v2)
@@ -189,10 +202,16 @@ namespace calib
 
         // # geometric product.
 
-        //const multivector _geom_prd_ (basis& base1, basis& base2, base_metric& metric)
-        //{
-        //    return _inner_prd_ (base1, base2, metric) + _outer_prd_ (base1, base2);
-        //}
+        const multivector _geom_prd_ (basis& base1, basis& base2, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (base1, base2, metric);
+            basis base_r = _outer_prd_ (base1, base2);
+
+            multivector m1 = multivector ();
+            m1. add_elem (base_r);
+
+            return m1;
+        }
 
     #endif
 
