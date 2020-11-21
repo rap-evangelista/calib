@@ -15,7 +15,7 @@ namespace calib
                 return mtx;
             }
 
-            virtual double _inner_prd_ (multivector& m1, multivector& m2)
+            virtual double _inner_prd_ (multivector& m1, multivector& m2) override
             {
                 return 0;
             }
