@@ -196,8 +196,13 @@ namespace calib
 
         const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric)
         {
-            std::cout << "size of metric matrix: " << metric. matrix (). size () << std::endl;
-            return 0;
+            multivector m1 = multivector ();
+            multivector m2 = multivector ();
+
+            m1. add_elem (base1);
+            m2. add_elem (base2);
+
+            return metric. _inner_prd_ (m1, m2);
         }
 
         // # geometric product.
