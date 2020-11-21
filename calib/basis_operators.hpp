@@ -17,7 +17,7 @@ namespace calib
 
     // # inner product possibilities for basis.
 
-    const basis _inner_prd_ (basis& base1, basis& base2, base_metric& metric);
+    const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric);
 
     // # left contraction possibilities for basis.
 
@@ -159,10 +159,10 @@ namespace calib
         return base3;
     }
 
-    const basis _inner_prd_ (basis& base1, basis& base2, base_metric& metric)
+    const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric)
     {
         std::cout << "size of metric matrix: " << metric. matrix (). size () << std::endl;
-        return basis ();
+        return 0;
     }
 
     bool operator== (basis& base1, basis& base2)

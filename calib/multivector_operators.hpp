@@ -61,11 +61,11 @@ namespace calib
 
     // # inner product possibilities between multivectors and basis.
 
-    const multivector _inner_prd_ (basis& base, multivector& mv, base_metric& metric);
+    const double _inner_prd_ (basis& base, multivector& mv, base_metric& metric);
 
-    const multivector _inner_prd_ (multivector& mv, basis& base, base_metric& metric);
+    const double _inner_prd_ (multivector& mv, basis& base, base_metric& metric);
 
-    const multivector _inner_prd_ (multivector& v1, multivector& v2, base_metric& metric);
+    const double _inner_prd_ (multivector& v1, multivector& v2, base_metric& metric);
 
     // # left contraction possibilities between multivectors and basis.
 
