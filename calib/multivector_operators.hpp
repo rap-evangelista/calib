@@ -61,6 +61,8 @@ namespace calib
 
     // # inner product possibilities between multivectors and basis.
 
+    const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric);
+
     const double _inner_prd_ (basis& base, multivector& mv, base_metric& metric);
 
     const double _inner_prd_ (multivector& mv, basis& base, base_metric& metric);
@@ -68,6 +70,8 @@ namespace calib
     const double _inner_prd_ (multivector& v1, multivector& v2, base_metric& metric);
 
     // # left contraction possibilities between multivectors and basis.
+
+    const multivector _left_contr_ (basis& base1, basis& base2);
 
     const multivector _left_contr_ (basis& base, multivector& mv, base_metric& metric);
 
@@ -177,7 +181,11 @@ namespace calib
             return v3;
         }
 
-        // # inner product.
+        const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric)
+        {
+            std::cout << "size of metric matrix: " << metric. matrix (). size () << std::endl;
+            return 0;
+        }
 
         // # geometric product.
 
