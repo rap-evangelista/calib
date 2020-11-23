@@ -28,11 +28,25 @@ int main (int argv, char * argc)
     std::cout << e3 << std::endl;
     std::cout << e4 << std::endl;
 
-    auto m1 = e1 + e3;
+    multivector m1 = e2 + e1;
+
+    std::cout << m1 << std::endl;
+
+    multivector m2 = m1 + e3;
+
+    std::cout << m2 << std::endl;
+
+    multivector m3 = m1 + m2;
+
+    std::cout << m3 << std::endl;
+
+    multivector m4 = m3 + e4;
+
+    std::cout << m4 << std::endl;
 
     auto mx = euclidian_metric ();
 
-    auto m2 = _inner_prd_ (e1, e2, mx);
+    auto m5 = _inner_prd_ (e1, e2, mx);
 
-    std::cout << m1 << std::endl;
+    std::cout << m5 << std::endl;
 }

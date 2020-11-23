@@ -3,6 +3,9 @@
 
 namespace calib
 {
+    struct multivector;
+    void cannonical_reordering (multivector& base);
+    
     struct multivector
     {
         public:

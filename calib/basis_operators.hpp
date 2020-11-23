@@ -21,6 +21,8 @@ namespace calib
 
     const basis _dual_ (basis& base);
 
+    const basis _undual_ (basis& base);
+
     std::ostream& operator<< (std::ostream& os, basis& value)
     {
         os << value. direction () << " ";
@@ -154,6 +156,16 @@ namespace calib
     bool operator== (basis& base1, basis& base2)
     {
         return (base1. degree () == base2. degree ()) && (base1. unique_index () == base2. unique_index ());
+    }
+
+    bool operator> (basis& base1, basis& base2)
+    {
+        return (base1. degree () > base2. degree ()) || (base1. degree () == base2. degree ()) && (base1. unique_index () > base2. unique_index ());
+    }
+
+    bool operator< (basis& base1, basis& base2)
+    {
+        return (base1. degree () < base2. degree ()) || (base1. degree () == base2. degree ()) && (base1. unique_index () < base2. unique_index ());
     }
 }
 

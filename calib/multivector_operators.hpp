@@ -17,47 +17,47 @@ namespace calib
 
     // # summation possibilities between multivectors and basis.
 
-    const multivector operator+ (basis& base1, basis& base2);   // # done
+    const multivector operator+ (basis& base1, basis& base2);   // # done.
 
-    const multivector operator+ (multivector& mv, basis& base);
+    const multivector operator+ (multivector& mv, basis& base); // # done.
 
-    const multivector operator+ (basis& base, multivector& mv);
+    const multivector operator+ (basis& base, multivector& mv); // # done.
 
-    const multivector operator+ (multivector& mv1, multivector& mv2);
-
-    template<typename T>
-    const basis operator+ (T scalar, basis& base);
+    const multivector operator+ (multivector& mv1, multivector& mv2);   // # done.
 
     template<typename T>
-    const basis operator+ (basis& base, T scalar);
+    const basis operator+ (T scalar, basis& base);  // # done.
 
     template<typename T>
-    const multivector operator+ (T scalar, multivector& mv);
+    const basis operator+ (basis& base, T scalar);  // # done.
 
     template<typename T>
-    const multivector operator+ (multivector& mv, T scalar);
+    const multivector operator+ (T scalar, multivector& mv);    // # done.
+
+    template<typename T>
+    const multivector operator+ (multivector& mv, T scalar);    // # done.
 
     // # outer product possibilities between multivectors and basis.
 
-    const multivector& operator^ (basis& base, multivector& mv);
+    const multivector& operator^ (basis& base, multivector& mv);    // # done.
 
-    const multivector& operator^ (multivector& mv, basis& base);
+    const multivector& operator^ (multivector& mv, basis& base);    // # done.
 
-    const multivector& operator^ (multivector& v1, multivector& v2);
+    const multivector& operator^ (multivector& v1, multivector& v2);   // # done.
 
-    const multivector _outer_prd_ (basis& base, multivector& mv);
+    const multivector _outer_prd_ (basis& base, multivector& mv);    // # done.
 
-    const multivector _outer_prd_ (multivector& mv, basis& base);
+    const multivector _outer_prd_ (multivector& mv, basis& base);    // # done.
 
-    const multivector _outer_prd_ (multivector& v1, multivector& v2);
+    const multivector _outer_prd_ (multivector& v1, multivector& v2);   // # done.
 
     // # regressive product possibilities between multivectors and basis.
 
-    const multivector _regr_prd_ (basis& base, multivector& mv);
+    const multivector _regr_prd_ (basis& base, multivector& mv);    // # done.
 
-    const multivector _regr_prd_ (multivector& mv, basis& base);
+    const multivector _regr_prd_ (multivector& mv, basis& base);    // # done.
 
-    const multivector _regr_prd_ (multivector& v1, multivector& v2);
+    const multivector _regr_prd_ (multivector& v1, multivector& v2);    // # done.
 
     // # inner product possibilities between multivectors and basis.
 
@@ -95,20 +95,43 @@ namespace calib
 
     const multivector _dual_ (multivector& mv);
 
-    std::ostream& operator<< (std::ostream& os, multivector& value)
-    {
-        for (int i = 0; i < value. elems. size (); i++)
-        {
-            os << "(" << value. elems [i] << ")";
-            if (i + 1 != value. elems. size ()) os << "+";
-        }
-
-        return os;
-    }
-
     // # host-only mode implementation.
 
     #ifdef CALIB_MODE_HOST_ONLY
+
+        void cannonical_reordering (multivector& mv)
+        {
+            bool sorted = false;
+
+            while (!sorted)
+            {
+                sorted = true;
+                for (int i = 0; i < mv. elems. size () - 1; i++)
+                {
+                    // # se bases iguais, elas se eliminam
+                    if (mv. elems [i] == mv. elems [i+1])
+                    {
+                        // # merge equal basis.
+                        auto scalar = mv. elems [i]. direction () + mv. elems [i+1]. direction ();
+                        mv. elems [i]. magnitude = std::abs (scalar);
+                        mv. elems [i]. orientation *= std::copysign (1, scalar);
+
+                        mv. elems. erase (mv. elems. begin () + i + 1);
+
+                        continue;
+                    }
+
+                    // # se base maior, troca as bases e inverte a orientação.
+                    if (mv. elems [i] > mv. elems [i+1])
+                    {
+                        sorted = false;
+                        basis aux = mv. elems [i];
+                        mv. elems [i] = mv. elems [i+1];
+                        mv. elems [i+1] = aux;
+                    }
+                }
+            }
+        }
 
         const multivector operator+ (basis& base1, basis& base2)
         {
@@ -118,80 +141,179 @@ namespace calib
             mv. add_elem (base2);
 
             // # rearrange.
+            cannonical_reordering (mv);
 
-            for (int i = 0; i < mv. elems. size () - 1; i++)
+            return mv;
+        }
+
+        const multivector operator+ (multivector& mv_, basis& base)
+        {
+            multivector mv = multivector ();
+
+            for (auto base : mv_. elems)
             {
-                for (int k = (i+1); k < mv. elems. size (); k++)
-                {
-                    if (mv. elems [k] == mv. elems [i])
-                    {
-                        float scalar = mv. elems [i]. magnitude + mv. elems [k]. direction ();
-                        mv. elems [i]. magnitude = std::abs (scalar);
-                        mv. elems [i]. orientation *= std::copysign (1, scalar);
-                        mv. elems. erase (mv. elems. begin () + k --);
-                    }
-                }
+                mv. elems. emplace_back (base);
             }
+
+            mv. add_elem (base);
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector operator+ (basis& base, multivector& mv_)
+        {
+            return (mv_ + base);
+        }
+
+        const multivector operator+ (multivector& mv1, multivector& mv2)
+        {
+            multivector mv = multivector ();
+
+            for (auto base : mv1. elems)
+            {
+                mv. elems. emplace_back (base);
+            }
+
+            for (auto base : mv2. elems)
+            {
+                mv. elems. emplace_back (base);
+            }
+
+            cannonical_reordering (mv);
 
             return mv;
         }
 
         template<typename T>
-        const basis operator+ (T scalar, basis& base)
+        const multivector operator+ (T scalar, basis& base)
         {
+            basis basex = basis ();
 
-            return basis ();
+            basex. magnitude = std::abs (scalar);
+            basex. orientation *= std::copysign (1, scalar);
+
+            return (basex + base);
         }
 
         template<typename T>
-        const basis operator+ (basis& base, T scalar)
+        const multivector operator+ (basis& base, T scalar)
         {
             return (scalar + base);
         }
 
+        template<typename T>
+        const multivector operator+ (T scalar, multivector& mv)
+        {
+            basis basex = basis ();
+
+            basex. magnitude = std::abs (scalar);
+            basex. orientation *= std::copysign (1, scalar);
+
+            return (basex + mv);
+        }
+
+        template<typename T>
+        const multivector operator+ (multivector& mv, T scalar)
+        {
+            return (scalar + mv);
+        }
+
         // # outer product.
 
-        const multivector _outer_prd_ (multivector& v1, multivector& v2)
+        const multivector _outer_prd_ (basis& base, multivector& mv_)
         {
-            multivector v3 = multivector ();
+            multivector mv = multivector ();
 
-            for (auto base1 : v1. elems)
+            mv. add_elem (base);
+
+            for (basis base_ : mv_. elems)
             {
-                for (auto base2 : v2. elems)
+                mv. add_elem (base_);
+            }
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector _outer_prd_ (multivector& mv, basis& base)
+        {
+            return _outer_prd_ (base, mv);
+        }
+
+        const multivector _outer_prd_ (multivector& mv1, multivector& mv2)
+        {
+            multivector mv = multivector ();
+
+            for (auto base1 : mv1. elems)
+            {
+                for (auto base2 : mv2. elems)
                 {
                     basis base_ = base1 ^ base2;
-                    v3. add_elem (base_);
+                    mv. add_elem (base_);
                 }
             }
 
-            // # reduct.
+            cannonical_reordering (mv);
 
-            return v3;
+            return mv;
         }
 
-        const multivector& operator^ (multivector& v1, multivector& v2)
+        const multivector& operator^ (basis& base, multivector& mv)
         {
-            return _outer_prd_ (v1, v2);
+            return _outer_prd_ (base, mv);
+        }
+
+        const multivector& operator^ (multivector& mv, basis& base)
+        {
+            return _outer_prd_ (base, mv);
+        }
+
+        const multivector& operator^ (multivector& mv1, multivector& mv2)
+        {
+            return _outer_prd_ (mv1, mv2);
         }
 
         // # regressive product.
 
-        const multivector _regr_prd_ (multivector& v1, multivector& v2)
+        const multivector _regr_prd_ (basis& base, multivector& mv_)
         {
-            multivector v3 = multivector ();
+            multivector mv = multivector ();
 
-            for (auto base1 : v1. elems)
+            for (auto base1 : mv_. elems)
             {
-                for (auto base2 : v2. elems)
+                basis base_ = _regr_prd_ (base1, base);
+                mv. add_elem (base_);
+            }
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector _regr_prd_ (multivector& mv, basis& base)
+        {
+            return _regr_prd_ (base, mv);
+        }
+
+        const multivector _regr_prd_ (multivector& mv1, multivector& mv2)
+        {
+            multivector mv = multivector ();
+
+            for (auto base1 : mv1. elems)
+            {
+                for (auto base2 : mv2. elems)
                 {
                     basis base_ = _regr_prd_ (base1, base2);
-                    v3. add_elem (base_);
+                    mv. add_elem (base_);
                 }
             }
 
-            // # reduct.
+            cannonical_reordering (mv);
 
-            return v3;
+            return mv;
         }
 
         const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric)
@@ -203,6 +325,20 @@ namespace calib
             m2. add_elem (base2);
 
             return metric. _inner_prd_ (m1, m2);
+        }
+
+        // # left contraction.
+
+        const multivector _left_contr_ (basis& base1, basis& base2)
+        {
+            //basis dual2 = _dual_ (base2);
+            //basis base1_dual2 = (base1 ^ dual2);
+            //basis udual = _undual_ (base1_dual2);
+
+            multivector m1 = multivector ();
+            //m1. add_elem (udual);
+
+            return m1;
         }
 
         // # geometric product.
@@ -223,6 +359,11 @@ namespace calib
     // # host-device mode implementation.
 
     #ifdef CALIB_MODE_HOST_DEVICE
+
+        void cannonical_reordering (multivector& mv)
+        {
+            
+        }
 
         const multivector operator+ (basis& base1, basis& base2)
         {
@@ -248,6 +389,17 @@ namespace calib
     #endif
 
     // # always host-only implementation.
+
+    std::ostream& operator<< (std::ostream& os, multivector& value)
+    {
+        for (int i = 0; i < value. elems. size (); i++)
+        {
+            os << "(" << value. elems [i] << ")";
+            if (i + 1 != value. elems. size ()) os << "+";
+        }
+
+        return os;
+    }
 
 }
 
