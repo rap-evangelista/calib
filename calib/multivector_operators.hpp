@@ -435,24 +435,290 @@ namespace calib
 
         const multivector operator+ (basis& base1, basis& base2)
         {
-            return multivector ();
+            multivector mv = multivector ();
+
+            mv. add_elem (base1);
+            mv. add_elem (base2);
+
+            // # rearrange.
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector operator+ (multivector& mv_, basis& base)
+        {
+            multivector mv = multivector ();
+
+            for (auto base : mv_. elems)
+            {
+                mv. elems. emplace_back (base);
+            }
+
+            mv. add_elem (base);
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector operator+ (basis& base, multivector& mv_)
+        {
+            return (mv_ + base);
         }
 
         const multivector operator+ (multivector& mv1, multivector& mv2)
         {
-            return bridge_sum_multivectors (mv1, mv2);
-            //return multivector ();
+            multivector mv = multivector ();
+
+            for (auto base : mv1. elems)
+            {
+                mv. elems. emplace_back (base);
+            }
+
+            for (auto base : mv2. elems)
+            {
+                mv. elems. emplace_back (base);
+            }
+
+            cannonical_reordering (mv);
+
+            return mv;
         }
 
-        // # external product.
+        template<typename T>
+        const multivector operator+ (T scalar, basis& base)
+        {
+            basis basex = basis ();
+
+            basex. magnitude = std::abs (scalar);
+            basex. orientation *= std::copysign (1, scalar);
+
+            return (basex + base);
+        }
+
+        template<typename T>
+        const multivector operator+ (basis& base, T scalar)
+        {
+            return (scalar + base);
+        }
+
+        template<typename T>
+        const multivector operator+ (T scalar, multivector& mv)
+        {
+            basis basex = basis ();
+
+            basex. magnitude = std::abs (scalar);
+            basex. orientation *= std::copysign (1, scalar);
+
+            return (basex + mv);
+        }
+
+        template<typename T>
+        const multivector operator+ (multivector& mv, T scalar)
+        {
+            return (scalar + mv);
+        }
+
+        // # outer product.
+
+        const multivector _outer_prd_ (basis& base, multivector& mv_)
+        {
+            multivector mv = multivector ();
+
+            mv. add_elem (base);
+
+            for (basis base_ : mv_. elems)
+            {
+                mv. add_elem (base_);
+            }
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector _outer_prd_ (multivector& mv, basis& base)
+        {
+            return _outer_prd_ (base, mv);
+        }
+
+        const multivector _outer_prd_ (multivector& mv1, multivector& mv2)
+        {
+            multivector mv = multivector ();
+
+            for (auto base1 : mv1. elems)
+            {
+                for (auto base2 : mv2. elems)
+                {
+                    basis base_ = base1 ^ base2;
+                    mv. add_elem (base_);
+                }
+            }
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector& operator^ (basis& base, multivector& mv)
+        {
+            return _outer_prd_ (base, mv);
+        }
+
+        const multivector& operator^ (multivector& mv, basis& base)
+        {
+            return _outer_prd_ (base, mv);
+        }
 
         const multivector& operator^ (multivector& mv1, multivector& mv2)
         {
-            return bridge_outer_prd_multivectors (mv1, mv2);
-            //return multivector ();
+            return _outer_prd_ (mv1, mv2);
         }
 
-        // # inner product.
+        // # regressive product.
+
+        const multivector _regr_prd_ (basis& base, multivector& mv_)
+        {
+            multivector mv = multivector ();
+
+            for (basis base1 : mv_. elems)
+            {
+                basis base_ = _regr_prd_ (base1, base);
+                mv. add_elem (base_);
+            }
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const multivector _regr_prd_ (multivector& mv, basis& base)
+        {
+            return _regr_prd_ (base, mv);
+        }
+
+        const multivector _regr_prd_ (multivector& mv1, multivector& mv2)
+        {
+            multivector mv = multivector ();
+
+            for (auto base1 : mv1. elems)
+            {
+                for (auto base2 : mv2. elems)
+                {
+                    basis base_ = _regr_prd_ (base1, base2);
+                    mv. add_elem (base_);
+                }
+            }
+
+            cannonical_reordering (mv);
+
+            return mv;
+        }
+
+        const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric)
+        {
+            multivector m1 = multivector ();
+            multivector m2 = multivector ();
+
+            m1. add_elem (base1);
+            m2. add_elem (base2);
+
+            return metric. _inner_prd_ (m1, m2);
+        }
+
+        const double _inner_prd_ (multivector& mv1, basis& base, base_metric& metric)
+        {
+            multivector mv2 = multivector ();
+
+            mv2. add_elem (base);
+
+            return metric. _inner_prd_ (mv1, mv2);
+        }
+
+        const double _inner_prd_ (basis& base, multivector& mv1, base_metric& metric)
+        {
+            multivector mv2 = multivector ();
+
+            mv2. add_elem (base);
+
+            return metric. _inner_prd_ (mv2, mv1);
+        }
+
+        const double _inner_prd_ (multivector& mv1, multivector& mv2, base_metric& metric)
+        {
+            return metric. _inner_prd_ (mv1, mv2);
+        }
+
+        const multivector _rev_norm_ (multivector& mv)
+        {
+            return multivector ();
+        }
+
+        const multivector _dual_ (basis& base)
+        {
+            multivector mv = multivector ();
+            mv. add_elem (base);
+
+            return _dual_ (mv);
+        }
+
+        const multivector _dual_ (multivector& mv)
+        {
+            std::vector <int> reverse_identity_base_indices (DEFAULT_SPACE_DIM);
+            std::generate (reverse_identity_base_indices. begin (), reverse_identity_base_indices. end (), [n = 1] () mutable { return n++; });
+
+            basis reverse_identity_base = _reverse_ (basis (reverse_identity_base_indices));
+
+            return _outer_prd_ (mv, reverse_identity_base);
+        }
+
+        const multivector _undual_ (multivector& mv)
+        {
+            std::vector <int> identity_base_indices (DEFAULT_SPACE_DIM);
+            std::generate (identity_base_indices. begin (), identity_base_indices. end (), [n = 1] () mutable { return n++; });
+
+            basis identity_base = basis (identity_base_indices);
+
+            return _outer_prd_ (mv, identity_base);
+        }
+
+        // # geometric product.
+
+        const multivector _geom_prd_ (basis& base1, basis& base2, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (base1, base2, metric);
+            basis base_r = _outer_prd_ (base1, base2);
+
+            multivector m1 = multivector ();
+            m1. add_elem (base_r);
+
+            return m1;
+        }
+
+        const multivector _geom_prd_ (multivector& mv_, basis& base, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (mv_, base, metric);
+            multivector mv = _outer_prd_ (mv_, base);
+
+            return mv;
+        }
+
+        const multivector _geom_prd_ (basis& base, multivector& mv_, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (base, mv_, metric);
+            multivector mv = _outer_prd_ (base, mv_);
+
+            return mv;
+        }
+
+        const multivector _geom_prd_ (multivector& mv1, multivector& mv2, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (mv1, mv2, metric);
+            multivector mv = _outer_prd_ (mv1, mv2);
+
+            return mv;
+        }
 
     #endif
 
