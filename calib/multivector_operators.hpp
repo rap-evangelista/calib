@@ -5,6 +5,8 @@
         #include "multivector_operators.cuh"
     #endif
 
+#include <algorithm>
+
 namespace calib
 {
     // # scalar multiplication possibilities for multivectors.
@@ -61,39 +63,39 @@ namespace calib
 
     // # inner product possibilities between multivectors and basis.
 
-    const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric);
+    const double _inner_prd_ (basis& base1, basis& base2, base_metric& metric); // # done.
 
-    const double _inner_prd_ (basis& base, multivector& mv, base_metric& metric);
+    const double _inner_prd_ (basis& base, multivector& mv, base_metric& metric);   // # done.
 
-    const double _inner_prd_ (multivector& mv, basis& base, base_metric& metric);
+    const double _inner_prd_ (multivector& mv, basis& base, base_metric& metric);   // # done.
 
-    const double _inner_prd_ (multivector& v1, multivector& v2, base_metric& metric);
+    const double _inner_prd_ (multivector& v1, multivector& v2, base_metric& metric);   //# done.
 
     // # left contraction possibilities between multivectors and basis.
 
-    const multivector _left_contr_ (basis& base1, basis& base2);
+    const multivector _left_contr_ (basis& base1, basis& base2);    // # TODO.
 
-    const multivector _left_contr_ (basis& base, multivector& mv, base_metric& metric);
+    const multivector _left_contr_ (basis& base, multivector& mv, base_metric& metric); // # TODO.
 
-    const multivector _left_contr_ (multivector& mv, basis& base, base_metric& metric);
+    const multivector _left_contr_ (multivector& mv, basis& base, base_metric& metric); // # TODO.
 
-    const multivector _left_contr_ (multivector& v1, multivector& v2, base_metric& metric);
+    const multivector _left_contr_ (multivector& v1, multivector& v2, base_metric& metric); // # TODO.
 
     // # geometric product possibilities between multivectors and basis.
 
-    const multivector _geom_prd_ (basis& base1, basis& base2, base_metric& metric);
+    const multivector _geom_prd_ (basis& base1, basis& base2, base_metric& metric); // # done.
 
-    const multivector _geom_prd_ (basis& base, multivector& mv, base_metric& metric);
+    const multivector _geom_prd_ (basis& base, multivector& mv, base_metric& metric);   // # done.
 
-    const multivector _geom_prd_ (multivector& mv, basis& base, base_metric& metric);
+    const multivector _geom_prd_ (multivector& mv, basis& base, base_metric& metric);   // # done.
 
-    const multivector _geom_prd_ (multivector& v1, multivector& v2, base_metric& metric);
+    const multivector _geom_prd_ (multivector& v1, multivector& v2, base_metric& metric);   // # done.
 
     // # individual operations possibilities for multivectors.
 
-    const multivector _rev_norm_ (multivector& mv);
+    const multivector _dual_ (basis& base);     // # done.
 
-    const multivector _dual_ (multivector& mv);
+    const multivector _dual_ (multivector& mv);     // # done.
 
     // # host-only mode implementation.
 
@@ -327,18 +329,60 @@ namespace calib
             return metric. _inner_prd_ (m1, m2);
         }
 
-        // # left contraction.
-
-        const multivector _left_contr_ (basis& base1, basis& base2)
+        const double _inner_prd_ (multivector& mv1, basis& base, base_metric& metric)
         {
-            //basis dual2 = _dual_ (base2);
-            //basis base1_dual2 = (base1 ^ dual2);
-            //basis udual = _undual_ (base1_dual2);
+            multivector mv2 = multivector ();
 
-            multivector m1 = multivector ();
-            //m1. add_elem (udual);
+            mv2. add_elem (base);
 
-            return m1;
+            return metric. _inner_prd_ (mv1, mv2);
+        }
+
+        const double _inner_prd_ (basis& base, multivector& mv1, base_metric& metric)
+        {
+            multivector mv2 = multivector ();
+
+            mv2. add_elem (base);
+
+            return metric. _inner_prd_ (mv2, mv1);
+        }
+
+        const double _inner_prd_ (multivector& mv1, multivector& mv2, base_metric& metric)
+        {
+            return metric. _inner_prd_ (mv1, mv2);
+        }
+
+        const multivector _rev_norm_ (multivector& mv)
+        {
+            return multivector ();
+        }
+
+        const multivector _dual_ (basis& base)
+        {
+            multivector mv = multivector ();
+            mv. add_elem (base);
+
+            return _dual_ (mv);
+        }
+
+        const multivector _dual_ (multivector& mv)
+        {
+            std::vector <int> reverse_identity_base_indices (DEFAULT_SPACE_DIM);
+            std::generate (reverse_identity_base_indices. begin (), reverse_identity_base_indices. end (), [n = 1] () mutable { return n++; });
+
+            basis reverse_identity_base = _reverse_ (basis (reverse_identity_base_indices));
+
+            return _outer_prd_ (mv, reverse_identity_base);
+        }
+
+        const multivector _undual_ (multivector& mv)
+        {
+            std::vector <int> identity_base_indices (DEFAULT_SPACE_DIM);
+            std::generate (identity_base_indices. begin (), identity_base_indices. end (), [n = 1] () mutable { return n++; });
+
+            basis identity_base = basis (identity_base_indices);
+
+            return _outer_prd_ (mv, identity_base);
         }
 
         // # geometric product.
@@ -352,6 +396,30 @@ namespace calib
             m1. add_elem (base_r);
 
             return m1;
+        }
+
+        const multivector _geom_prd_ (multivector& mv_, basis& base, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (mv_, base, metric);
+            multivector mv = _outer_prd_ (mv_, base);
+
+            return mv;
+        }
+
+        const multivector _geom_prd_ (basis& base, multivector& mv_, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (base, mv_, metric);
+            multivector mv = _outer_prd_ (base, mv_);
+
+            return mv;
+        }
+
+        const multivector _geom_prd_ (multivector& mv1, multivector& mv2, base_metric& metric)
+        {
+            double scalar = _inner_prd_ (mv1, mv2, metric);
+            multivector mv = _outer_prd_ (mv1, mv2);
+
+            return mv;
         }
 
     #endif

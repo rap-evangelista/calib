@@ -17,11 +17,7 @@ namespace calib
 
     // # individual operations possibilities for multivectors.
 
-    const basis _rev_norm_ (basis& base);
-
-    const basis _dual_ (basis& base);
-
-    const basis _undual_ (basis& base);
+    const basis _reverse_ (basis& base);    // # done.
 
     std::ostream& operator<< (std::ostream& os, basis& value)
     {
@@ -151,6 +147,22 @@ namespace calib
         base3. orientation = base1. orientation * base2. orientation;
 
         return base3;
+    }
+
+    const basis _reverse_ (basis& base_)
+    {
+        std::vector <int> base_index;
+
+        for (int i = base_. base_index. size () - 1; i >= 0; i++)
+        {
+            base_index. emplace_back (base_. base_index [i]);
+        }
+
+        basis base = basis (base_index);
+        base. magnitude = base_. magnitude;
+        base. orientation = pow (-1, DEFAULT_SPACE_DIM * (DEFAULT_SPACE_DIM - 1) / 2) * base_. orientation;
+
+        return base;
     }
 
     bool operator== (basis& base1, basis& base2)

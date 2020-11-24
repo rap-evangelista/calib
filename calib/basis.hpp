@@ -14,7 +14,7 @@ namespace calib
         public:
             std::vector <int> base_index;   // # a list of indices representing the base vectors (e1 -> {1}, e2 -> {2}, e1^e2 -> {1,2}, ...).
             int orientation = 1;            // # the way direction how a particle moves through a support.
-            double magnitude = 0;           // # the speed of the particle.
+            double magnitude = 1;           // # the speed of the particle.
 
             basis () {}
             basis (std::vector <int> args) {this-> init (args);}
