@@ -9,15 +9,15 @@ namespace calib
 {
     // # outer product possibilities for basis.
 
-    const basis _outer_prd_ (basis& base1, basis& base2);   // # done.
+    basis _outer_prd_ (basis& base1, basis& base2);   // # done.
 
     // # regressive product possibilities for basis.
 
-    const basis _regr_prd_ (basis& base1, basis& base2);   // # done.
+    basis _regr_prd_ (basis& base1, basis& base2);   // # done.
 
     // # individual operations possibilities for multivectors.
 
-    const basis _reverse_ (basis& base);    // # done.
+    basis _reverse_ (basis const base);    // # done.
 
     std::ostream& operator<< (std::ostream& os, basis& value)
     {
@@ -38,6 +38,8 @@ namespace calib
         void cannonical_reordering (basis& base)
         {
             bool sorted = false;
+
+            if (base. base_index. size () <= 0) return;
 
             while (!sorted)
             {
@@ -82,7 +84,7 @@ namespace calib
     // # always host-only implementation.
 
     template<typename T>
-    const basis& operator* (T scalar, basis& base)
+    basis operator* (T scalar, basis& base)
     {
         static_assert (std::is_arithmetic <T>::value, "An arithmetic type is required");
         base. magnitude = std::abs (scalar);
@@ -91,7 +93,7 @@ namespace calib
     }
 
     template<typename T>
-    const basis& operator* (basis& base, T scalar)
+    basis operator* (basis& base, T scalar)
     {
         static_assert (std::is_arithmetic <T>::value, "An arithmetic type is required");
         base. magnitude = std::abs (scalar);
@@ -99,7 +101,7 @@ namespace calib
         return base;
     }
 
-    const basis _outer_prd_ (basis& base1, basis& base2)
+    basis _outer_prd_ (basis& base1, basis& base2)
     {
         std::vector <int> base_index;
         base_index =  base1. base_index;
@@ -116,12 +118,12 @@ namespace calib
         return base3;
     }
 
-    const basis operator^ (basis& base1, basis& base2)
+    basis operator^ (basis& base1, basis& base2)
     {
         return _outer_prd_ (base1, base2);
     }
 
-    const basis _regr_prd_ (basis& base1, basis& base2)
+    basis _regr_prd_ (basis& base1, basis& base2)
     {
         std::vector <int> base_index;
 
@@ -149,7 +151,7 @@ namespace calib
         return base3;
     }
 
-    const basis _reverse_ (basis& base_)
+    basis _reverse_ (basis const base_)
     {
         std::vector <int> base_index;
 

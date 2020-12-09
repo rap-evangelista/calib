@@ -13,9 +13,27 @@ namespace calib
 
             multivector () {}
 
+            void clear ()
+            {
+                elems. clear ();
+            }
+
             void add_elem (basis &e)
             {
                 this-> elems. push_back (e);
+            }
+
+            basis search (int degree, unsigned long long int index)
+            {
+                for (auto base : this-> elems)
+                {
+                    if (base. degree () == degree && base. unique_index () == index) return base;
+                }
+
+                basis null;
+                null. magnitude = 0;
+                null. orientation = -1;
+                return null;
             }
     };
 }

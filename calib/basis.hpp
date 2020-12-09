@@ -4,6 +4,8 @@
 #ifndef CALIB_STRUCT_BASIS
     #define CALIB_STRUCT_BASIS
 
+#include <algorithm>
+
 namespace calib
 {
     struct basis;
@@ -43,8 +45,46 @@ namespace calib
             {
                 return this-> orientation * this-> magnitude;
             }
+            
+            unsigned long long int cantor_pairing (unsigned long long int x, unsigned long long int y)
+            {
+                return (x * x + 3 * x + 2 * x * y + y + y * y) / 2;
+            }
 
-            int unique_index ()
+            void recover_from_degree_and_unique_index (int degree, unsigned long long int unique_index)
+            {
+                this-> base_index. clear ();
+                
+                if (degree == 1)
+                    this-> base_index. push_back ((int) unique_index);
+                
+                if (degree > 1)
+                {
+                    unsigned long long int next_unique_index = unique_index;
+
+                    for (int i = 0; i < degree; i++)
+                    {
+                        if (i == degree - 1)
+                        {
+                            this-> base_index. push_back ((int) next_unique_index);
+                            break;
+                        }
+
+                        unsigned long long int aux = std::floor ((-1 + std::sqrt (1 + 8 * next_unique_index)) / 2.0f);
+
+                        unsigned long long int x = next_unique_index - (aux * (1 + aux) / 2.0f);
+                        unsigned long long int y = (aux * (3 + aux) / 2) - next_unique_index;
+
+                        next_unique_index = x;
+
+                        this-> base_index. push_back ((int) y);
+                    }
+
+                    std::reverse (std::begin (this-> base_index), std::end (this-> base_index));
+                }
+            }
+
+            unsigned long long int unique_index ()
             {
                 if (this-> base_index. size () == 0)
                     return 0;
@@ -60,12 +100,6 @@ namespace calib
                 }
 
                 return value;
-            }
-
-        private:
-            int cantor_pairing (int x, int y)
-            {
-                return (x * x + 3 * x + 2 * x * y + y + y * y) / 2;
             }
     };
 }
